@@ -10,6 +10,7 @@ import (
 	"google.golang.org/genai"
 )
 
+// generates embeddings through whatever provider is set in .env
 func Generate(ctx context.Context, text string) ([]float32, error) {
 	switch provider := os.Getenv("EMBEDDING_PROVIDER"); provider {
 	case "openai":
@@ -48,6 +49,7 @@ func Generate(ctx context.Context, text string) ([]float32, error) {
 	}
 }
 
+// OpenAI returns float64 for some reason so convert it
 func toFloat32(v []float64) []float32 {
 	result := make([]float32, len(v))
 	for i, x := range v {

@@ -1,4 +1,4 @@
-FROM golang:1.24.1 AS build
+FROM golang:1.25.6 AS build
 
 WORKDIR /app
 
@@ -18,6 +18,6 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/ingest/ingest .
-COPY ingest/data/ ./ingest/data/
+COPY ingest/data/ ./data/
 
 CMD ["./ingest"]

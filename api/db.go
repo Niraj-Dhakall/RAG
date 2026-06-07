@@ -8,7 +8,9 @@ import (
 	"github.com/pgvector/pgvector-go"
 	
 )
-
+/*
+This file serves as a way to get a pool connection to the DB, and also perform a similaritySearch with a cosine distance score.
+*/
 
 type SearchResult struct {
 	ID string
@@ -17,7 +19,7 @@ type SearchResult struct {
 	Score float64
 }
 
-
+// Returns an array of SearchResults and any errors
 func similaritySearch(ctx context.Context, pool *pgxpool.Pool, embedding []float32, topK int)([]SearchResult, error){
 	// <=> means cosine distance
 	query := `SELECT id, title, text, 1 - (embedding <=> $1) as score 
@@ -54,6 +56,7 @@ func similaritySearch(ctx context.Context, pool *pgxpool.Pool, embedding []float
 	
 }
 
+// Returns a pointer to the pool connection and any errors
 func connectDB(ctx context.Context)(*pgxpool.Pool, error){
 	dsn := os.Getenv("POSTGRES_DSN")
 	pool, err := pgxpool.New(ctx, dsn)

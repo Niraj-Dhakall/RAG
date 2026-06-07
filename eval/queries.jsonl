@@ -1,0 +1,46 @@
+{"query": "why does spacetime curve around massive objects", "expected_id": "wiki_001", "hard_negatives": ["wiki_002", "wiki_011", "wiki_007"], "style": "student"}
+{"query": "spacetime geometry gravity Einstein 1916", "expected_id": "wiki_001", "hard_negatives": ["wiki_002", "wiki_013", "wiki_006"], "style": "keyword"}
+{"query": "general relatvity warping of space time massve bodeis", "expected_id": "wiki_001", "hard_negatives": ["wiki_002", "wiki_011", "wiki_014"], "style": "noisy"}
+{"query": "tiny negative particle inside every atom, almost no mass", "expected_id": "wiki_003", "hard_negatives": ["wiki_005", "wiki_014", "wiki_004"], "style": "student"}
+{"query": "lepton spin half subatomic 1/1836 proton mass", "expected_id": "wiki_003", "hard_negatives": ["wiki_005", "wiki_014", "wiki_012"], "style": "keyword"}
+{"query": "why light ejects electrons from metal surfaces", "expected_id": "wiki_010", "hard_negatives": ["wiki_003", "wiki_013", "wiki_006"], "style": "student"}
+{"query": "Einstein Nobel Prize quanta photons metal surface", "expected_id": "wiki_010", "hard_negatives": ["wiki_003", "wiki_006", "wiki_014"], "style": "keyword"}
+{"query": "photoelctric quantum light eject eletrons 1905", "expected_id": "wiki_010", "hard_negatives": ["wiki_003", "wiki_013", "wiki_019"], "style": "noisy"}
+{"query": "nothing escapes not even light event horizon", "expected_id": "wiki_011", "hard_negatives": ["wiki_001", "wiki_007", "wiki_008"], "style": "student"}
+{"query": "black hole event horizon spacetime singularity", "expected_id": "wiki_011", "hard_negatives": ["wiki_001", "wiki_002", "wiki_013"], "style": "keyword"}
+{"query": "first ever nuclear reactor Chicago university 1942", "expected_id": "wiki_015", "hard_negatives": ["wiki_016", "wiki_017", "wiki_012"], "style": "student"}
+{"query": "CP-1 Stagg Field chain reaction Fermi Manhattan", "expected_id": "wiki_015", "hard_negatives": ["wiki_016", "wiki_017", "wiki_044"], "style": "keyword"}
+{"query": "how does shooting electrons one at a time still make interference fringes", "expected_id": "wiki_019", "hard_negatives": ["wiki_013", "wiki_003", "wiki_010"], "style": "student"}
+{"query": "Young double slit wave particle photon interference", "expected_id": "wiki_019", "hard_negatives": ["wiki_013", "wiki_006", "wiki_010"], "style": "keyword"}
+{"query": "single celled organisms no nucleus recycling nitrogen oldest life", "expected_id": "wiki_021", "hard_negatives": ["wiki_037", "wiki_022", "wiki_039"], "style": "student"}
+{"query": "prokaryote nitrogen cycle decomposer microorganism soil", "expected_id": "wiki_021", "hard_negatives": ["wiki_037", "wiki_022", "wiki_027"], "style": "keyword"}
+{"query": "bacteira prokaryot nutrient recycl soil microorgansim", "expected_id": "wiki_021", "hard_negatives": ["wiki_037", "wiki_022", "wiki_039"], "style": "noisy"}
+{"query": "double helix gene blueprint hereditary molecule", "expected_id": "wiki_023", "hard_negatives": ["wiki_025", "wiki_032", "wiki_039"], "style": "student"}
+{"query": "nucleotide adenine guanine Watson Crick heredity", "expected_id": "wiki_023", "hard_negatives": ["wiki_025", "wiki_032", "wiki_027"], "style": "keyword"}
+{"query": "white blood cells eat bacteria to fight infection", "expected_id": "wiki_033", "hard_negatives": ["wiki_026", "wiki_021", "wiki_022"], "style": "student"}
+{"query": "innate immunity macrophage neutrophil ingestion pathogen", "expected_id": "wiki_033", "hard_negatives": ["wiki_026", "wiki_022", "wiki_039"], "style": "keyword"}
+{"query": "asteroid dinosaur extinction 66 million years Chicxulub", "expected_id": "wiki_028", "hard_negatives": ["wiki_036", "wiki_024", "wiki_029"], "style": "keyword"}
+{"query": "K-Pg mass extinction three quarters species wiped out impact", "expected_id": "wiki_028", "hard_negatives": ["wiki_036", "wiki_040", "wiki_024"], "style": "incomplete"}
+{"query": "Darwin wrote about how orchids trick insects for pollination", "expected_id": "wiki_038", "hard_negatives": ["wiki_035", "wiki_034", "wiki_040"], "style": "student"}
+{"query": "1862 Darwin orchid insect cross-pollination natural selection", "expected_id": "wiki_038", "hard_negatives": ["wiki_035", "wiki_034", "wiki_024"], "style": "keyword"}
+{"query": "first Anglo-Saxon king to rule all England battle 937", "expected_id": "wiki_041", "hard_negatives": ["wiki_042", "wiki_043", "wiki_049"], "style": "student"}
+{"query": "Athelstan Brunanburh Anglo-Saxon king died no children", "expected_id": "wiki_041", "hard_negatives": ["wiki_042", "wiki_043", "wiki_060"], "style": "keyword"}
+{"query": "Athelstan Brunanbrh Anglo Saxon king died childless", "expected_id": "wiki_041", "hard_negatives": ["wiki_042", "wiki_043", "wiki_056"], "style": "noisy"}
+{"query": "when was an Australian PM sacked by the Queen's representative", "expected_id": "wiki_045", "hard_negatives": ["wiki_048", "wiki_057", "wiki_053"], "style": "student"}
+{"query": "Kerr Whitlam supply Senate dismissal 1975 Australia", "expected_id": "wiki_045", "hard_negatives": ["wiki_057", "wiki_048", "wiki_056"], "style": "keyword"}
+{"query": "Islamic caliph who standardised coins and built famous Jerusalem shrine", "expected_id": "wiki_046", "hard_negatives": ["wiki_047", "wiki_060", "wiki_049"], "style": "student"}
+{"query": "Umayyad Dome Rock Arabization gold dinar caliph 685", "expected_id": "wiki_046", "hard_negatives": ["wiki_047", "wiki_060", "wiki_051"], "style": "keyword"}
+{"query": "plague that killed half of medieval Europe spread from Asia", "expected_id": "wiki_050", "hard_negatives": ["wiki_051", "wiki_028", "wiki_054"], "style": "student"}
+{"query": "Yersinia pestis bubonic Black Death 1347 Crimea Sicily", "expected_id": "wiki_050", "hard_negatives": ["wiki_051", "wiki_060", "wiki_047"], "style": "keyword"}
+{"query": "secret British scientists decided atomic bomb was possible before US did", "expected_id": "wiki_059", "hard_negatives": ["wiki_016", "wiki_044", "wiki_058"], "style": "student"}
+{"query": "MAUD 1941 report feasibility nuclear weapon British wartime", "expected_id": "wiki_059", "hard_negatives": ["wiki_016", "wiki_058", "wiki_044"], "style": "keyword"}
+{"query": "MAUD Commitee 1941 atomic bomb British feasbility report", "expected_id": "wiki_059", "hard_negatives": ["wiki_058", "wiki_016", "wiki_017"], "style": "noisy"}
+{"query": "how do you find the biggest number that divides two numbers evenly", "expected_id": "wiki_063", "hard_negatives": ["wiki_062", "wiki_067", "wiki_071"], "style": "student"}
+{"query": "GCD algorithm Euclid Elements 300 BC step by step", "expected_id": "wiki_063", "hard_negatives": ["wiki_062", "wiki_066", "wiki_067"], "style": "keyword"}
+{"query": "Euclid grestest common divisor algortihm oldest math procedure", "expected_id": "wiki_063", "hard_negatives": ["wiki_062", "wiki_067", "wiki_065"], "style": "noisy"}
+{"query": "Wiles 1994 proof margin note Fermat integers exponent", "expected_id": "wiki_069", "hard_negatives": ["wiki_070", "wiki_063", "wiki_065"], "style": "keyword"}
+{"query": "350 year old math problem finally solved in 1990s by one person", "expected_id": "wiki_069", "hard_negatives": ["wiki_070", "wiki_063", "wiki_062"], "style": "student"}
+{"query": "299 million metres per second universal speed limit relativity", "expected_id": "wiki_006", "hard_negatives": ["wiki_001", "wiki_003", "wiki_013"], "style": "keyword"}
+{"query": "why can't anything go faster than light", "expected_id": "wiki_006", "hard_negatives": ["wiki_001", "wiki_011", "wiki_019"], "style": "student"}
+{"query": "US wartime project that built the first atomic bomb Oppenheimer", "expected_id": "wiki_044", "hard_negatives": ["wiki_015", "wiki_017", "wiki_059"], "style": "keyword"}
+{"query": "Hiroshima Nagasaki bomb secret WWII research program 1942 1945", "expected_id": "wiki_044", "hard_negatives": ["wiki_015", "wiki_059", "wiki_058"], "style": "incomplete"}
