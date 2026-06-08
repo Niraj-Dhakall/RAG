@@ -29,6 +29,8 @@ services:
       - .env
     environment:
       - API_URL=${API_URL}
+    volumes:
+      - ./eval/results:/results
     restart: "no"
     depends_on:
       postgres:

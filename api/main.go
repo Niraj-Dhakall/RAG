@@ -68,6 +68,32 @@ func (s *server) handleSearch(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{"Results": results})
 }
+
+func (s *server) handleKeywordSearch(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allowed-Methods", "POST")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+		return
+	}
+	var request SearchRequest
+	defer r.Body.Close()
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, "Error decoding request", http.StatusBadRequest)
+		return
+	}
+
+	results, err := keywordSearch(r.Context(), s.pool, request.Query, request.TopK)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{"Results": results})
+}
 func main() {
 	pool, err := connectDB(context.Background())
 	if err != nil {
@@ -77,6 +103,7 @@ func main() {
 	s := &server{pool: pool}
 	http.HandleFunc("/health", handleHealthCheck)
 	http.HandleFunc("/search", s.handleSearch)
+	http.HandleFunc("/search/keyword", s.handleKeywordSearch)
 	fmt.Print("Now running on port 8080")
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {

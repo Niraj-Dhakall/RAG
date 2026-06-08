@@ -1,0 +1,5 @@
+                   Semantic     Keyword     
+Recall@1           93.48       % 80.43       %
+Recall@3           100.00      % 89.13       %
+Recall@5           100.00      % 91.30       %
+Confusion rate     6.52        % 34.78       %

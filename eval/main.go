@@ -33,21 +33,18 @@ type SearchResponse struct {
 
 // handles the evaluation of the RAG system
 // Reads queries.jsonl and computes recall@1, recall@3, recall@5, and confusion rate
-func evalHandler(ctx context.Context, filepath string) error {
+func evalHandler(ctx context.Context, filepath string, endpoint string) (recall1, recall3, recall5, confused, total int, err error){
 	apiURL := os.Getenv("API_URL")
 	if apiURL == "" {
 		apiURL = "http://api:8080"
 	}
 	file, err := os.Open(filepath)
 	if err != nil {
-		return err
+		return 0, 0, 0,0, 0, err // idk how to get rid of needing to do this to return an error
 	}
 	defer file.Close()
 	scanner := bufio.NewScanner(file)
-	var recall1 int
-	var recall3 int
-	var recall5 int
-	var total int
+	
 	var confusedTotal int
 	// read all queries
 	for scanner.Scan() {
@@ -56,7 +53,7 @@ func evalHandler(ctx context.Context, filepath string) error {
 		line := scanner.Bytes()
 		err := json.Unmarshal(line, &query)
 		if err != nil {
-			return err
+			return 0, 0, 0,0, 0, err
 		}
 		reqBody := SearchRequest{
 			Query: query.Query,
@@ -64,25 +61,25 @@ func evalHandler(ctx context.Context, filepath string) error {
 		}
 		body, err := json.Marshal(reqBody)
 		if err != nil {
-			return err
+			return 0, 0, 0,0, 0, err
 		}
 		// make the search call for each query
-		req, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL+"/search", bytes.NewBuffer(body))
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, apiURL + endpoint, bytes.NewBuffer(body))
 
 		if err != nil {
-			return err
+			return 0, 0, 0,0, 0, err
 		}
 		req.Header.Set("Content-Type", "application/json")
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
-			return err
+			return 0, 0, 0,0, 0, err
 		}
 
 		var searchResp SearchResponse
 
 		err = json.NewDecoder(res.Body).Decode(&searchResp)
 		if err != nil {
-			return err
+			return 0, 0, 0,0, 0, err
 		}
 		// evaluate the result for each query
 		confused := false
@@ -113,22 +110,82 @@ func evalHandler(ctx context.Context, filepath string) error {
 			recall5++
 		}
 		total++
-
 		res.Body.Close()
 	}
-	fmt.Printf("Recall@1: %.2f%%\n", float64(recall1)/float64(total)*100)
-	fmt.Printf("Recall@3: %.2f%%\n", float64(recall3)/float64(total)*100)
-	fmt.Printf("Recall@5: %.2f%%\n", float64(recall5)/float64(total)*100)
-	fmt.Printf("Hard-negative confusion rate: %.2f%%\n", float64(confusedTotal)/float64(total)*100)
-	fmt.Printf("Total queries processed: %v\n", total)
-
-	return scanner.Err()
+	
+	err = scanner.Err()
+	if err != nil {
+		return 0, 0, 0,0, 0, err
+	}
+	
+	return recall1, recall3, recall5, confusedTotal, total, nil
 }
 
 func main() {
+	var semRecall1 int
+	var semRecall3 int
+	var semRecall5 int
+	var semTotal int
+	var semConfusedTotal int
+
+	var keyRecall1 int
+	var keyRecall3 int
+	var keyRecall5 int
+	var keyTotal int
+	var keyConfusedTotal int
+
 	ctx := context.Background()
-	err := evalHandler(ctx, "queries.jsonl")
+	
+	semRecall1, semRecall3, semRecall5, semConfusedTotal, semTotal, err := evalHandler(ctx, "queries.jsonl", "/search")
 	if err != nil {
 		panic(err)
 	}
+	keyRecall1, keyRecall3, keyRecall5, keyConfusedTotal, keyTotal, err = evalHandler(ctx, "queries.jsonl", "/search/keyword")
+	if err != nil {
+		panic( err)
+	}
+	lines := []string{
+		fmt.Sprintf("%-18s %-12s %-12s", "", "Semantic", "Keyword"),
+		fmt.Sprintf("%-18s %-12.2f%% %-12.2f%%",
+			"Recall@1",
+			float64(semRecall1)/float64(semTotal)*100,
+			float64(keyRecall1)/float64(keyTotal)*100,
+		),
+		fmt.Sprintf("%-18s %-12.2f%% %-12.2f%%",
+			"Recall@3",
+			float64(semRecall3)/float64(semTotal)*100,
+			float64(keyRecall3)/float64(keyTotal)*100,
+		),
+		fmt.Sprintf("%-18s %-12.2f%% %-12.2f%%",
+			"Recall@5",
+			float64(semRecall5)/float64(semTotal)*100,
+			float64(keyRecall5)/float64(keyTotal)*100,
+		),
+		fmt.Sprintf("%-18s %-12.2f%% %-12.2f%%",
+			"Confusion rate",
+			float64(semConfusedTotal)/float64(semTotal)*100,
+			float64(keyConfusedTotal)/float64(keyTotal)*100,
+		),
+	}
+
+	for _, l := range lines {
+		fmt.Println(l)
+	}
+
+	err = os.MkdirAll("/results", 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	out, err := os.Create("/results/eval_results.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer out.Close()
+
+	for _, l := range lines {
+		fmt.Fprintln(out, l)
+	}
+
+	
 }
