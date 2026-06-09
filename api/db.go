@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"os"
+	"sort"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/pgvector/pgvector-go"
@@ -19,11 +19,108 @@ type SearchResult struct {
 	Snippet string
 	Score   float64
 }
+type entry struct {
+	result SearchResult
+	score  float64
+}
+
+func hybridSearch(ctx context.Context, pool *pgxpool.Pool, query string, topK int) ([]SearchResult, error) {
+	keywordSearchRes, err := keywordSearch(ctx, pool, query, topK)
+	if err != nil {
+		return nil, err
+	}
+	maxScore := 0.0
+	seenIds := make(map[string]bool) // prevent duplicate docs from appearning when we do the trigram
+	for _, result := range keywordSearchRes {
+		if result.Score > maxScore {
+			maxScore = result.Score
+		}
+		seenIds[result.ID] = true
+	}
+
+	var entries []entry
+	for _, result := range keywordSearchRes {
+		norm := 0.0
+		if maxScore > 0 {
+			norm = result.Score / maxScore // normalize all the scores by this highest score
+		}
+		entries = append(entries, entry{result: result, score: 0.7 * norm})
+	}
+
+	if len(keywordSearchRes) < topK {
+		trigramSearchRes, err := trigramSearch(ctx, pool, query, topK)
+		if err != nil {
+			return nil, err
+		}
+		maxTrigramScore := 0.0
+		for _, result := range trigramSearchRes {
+			if !seenIds[result.ID] && result.Score > maxTrigramScore {
+				maxTrigramScore = result.Score
+			}
+		}
+		for _, result := range trigramSearchRes {
+			if seenIds[result.ID] { // the result was already computed previously
+				continue
+			}
+			norm := 0.0
+			if maxTrigramScore > 0 {
+				norm = result.Score / maxTrigramScore // normalize all the scores by this highest score
+			}
+			entries = append(entries, entry{result: result, score: 0.3 * norm})
+			seenIds[result.ID] = true
+		}
+	}
+
+	sort.Slice(entries, func(i, j int) bool {
+		return entries[i].score > entries[j].score
+	})
+	results := make([]SearchResult, 0, topK)
+	for i, e := range entries {
+		if i >= topK {
+			break
+		}
+		e.result.Score = e.score // replace the original ts_rank values by the new hybrid scores
+		results = append(results, e.result)
+	}
+	return results, nil
+
+}
+
+// Returns an array of SearchResults and any errors for trigram search
+func trigramSearch(ctx context.Context, pool *pgxpool.Pool, query string, topK int) ([]SearchResult, error) {
+	sqlQuery := `
+        SELECT id, title, text, similarity(title || ' ' || text, $1) AS score
+        FROM documents
+        WHERE similarity(title || ' ' || text, $1) > 0.1
+        ORDER BY score DESC
+        LIMIT $2`
+	rows, err := pool.Query(ctx, sqlQuery, query, topK)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var res []SearchResult
+	for rows.Next() {
+		var r SearchResult
+		err := rows.Scan(
+			&r.ID,
+			&r.Title,
+			&r.Snippet,
+			&r.Score,
+		)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, r)
+	}
+	return res, rows.Err()
+}
 
 // Returns an array of SearchResults and any errors for keyword search
 func keywordSearch(ctx context.Context, pool *pgxpool.Pool, query string, topK int) ([]SearchResult, error) {
 	sqlQuery := `SELECT id, title, text, ts_rank(ts, websearch_to_tsquery('english', $1)) AS score
 			  FROM documents
+			  WHERE ts @@ websearch_to_tsquery('english', $1)
 			  ORDER BY score DESC
 			  LIMIT $2`
 	rows, err := pool.Query(ctx, sqlQuery, query, topK)
@@ -45,7 +142,6 @@ func keywordSearch(ctx context.Context, pool *pgxpool.Pool, query string, topK i
 		}
 		res = append(res, r)
 	}
-	fmt.Printf("Length of result from keyword search: %d", len(res))
 	return res, rows.Err()
 }
 

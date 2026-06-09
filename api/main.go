@@ -35,6 +35,25 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func (s *server) handleHybridSearch(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Content-Type", "application/json")
+    if r.Method != http.MethodPost {
+        http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+        return
+    }
+    var request SearchRequest
+    defer r.Body.Close()
+    if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+        http.Error(w, "Error decoding request", http.StatusBadRequest)
+        return
+    }
+    results, err := hybridSearch(r.Context(), s.pool, request.Query, request.TopK)
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    json.NewEncoder(w).Encode(map[string]interface{}{"Results": results})
+}
 
 // Handles query searches. Takes in a request with a Query and a Top_K value and returns the result from the DB.
 func (s *server) handleSearch(w http.ResponseWriter, r *http.Request) {
@@ -104,6 +123,8 @@ func main() {
 	http.HandleFunc("/health", handleHealthCheck)
 	http.HandleFunc("/search", s.handleSearch)
 	http.HandleFunc("/search/keyword", s.handleKeywordSearch)
+	http.HandleFunc("/search/hybrid", s.handleHybridSearch)
+
 	fmt.Print("Now running on port 8080")
 	err = http.ListenAndServe(":8080", nil)
 	if err != nil {
