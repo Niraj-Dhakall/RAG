@@ -46,7 +46,6 @@ func hybridSearch(ctx context.Context, pool *pgxpool.Pool, query string, topK in
 		}
 		entries = append(entries, entry{result: result, score: 0.7 * norm})
 	}
-
 	if len(keywordSearchRes) < topK {
 		trigramSearchRes, err := trigramSearch(ctx, pool, query, topK)
 		if err != nil {
@@ -89,9 +88,9 @@ func hybridSearch(ctx context.Context, pool *pgxpool.Pool, query string, topK in
 // Returns an array of SearchResults and any errors for trigram search
 func trigramSearch(ctx context.Context, pool *pgxpool.Pool, query string, topK int) ([]SearchResult, error) {
 	sqlQuery := `
-        SELECT id, title, text, similarity(title || ' ' || text, $1) AS score
+        SELECT id, title, text, word_similarity($1, title || ' ' || text) AS score
         FROM documents
-        WHERE similarity(title || ' ' || text, $1) > 0.1
+        WHERE $1 <% (title || ' ' || text)
         ORDER BY score DESC
         LIMIT $2`
 	rows, err := pool.Query(ctx, sqlQuery, query, topK)
