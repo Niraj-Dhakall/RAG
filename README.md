@@ -29,6 +29,8 @@ A local Retrieval-Augmented Generation (RAG) system. Uses real embeddings, pgvec
 |- eval/
 │   - main.go          # Runs 46 query/expected-doc pairs (with hard negatives), reports recall@k
 │   - queries.jsonl    # Eval set
+|   - /results
+|     |- eval_results.txt # results from evaluation function
 |
 | - ingest/
 │    - main.go          # Loads documents, embeds, inserts into DB
@@ -116,6 +118,8 @@ Returns the top-k most similar documents by cosine similarity.
 
 Returns `{"status": "ok"}` when the API and DB are reachable.
 
+### other searches can be done by `/search/keyword` and `/search/hybrid`
+
 ## Dataset
 
 ~75 abstracts pulled from the Wikipedia featured articles list, covering physics, biology, history, and mathematics. Stored as newline-delimited JSON in `ingest/data/articles.jsonl`:
@@ -175,5 +179,4 @@ API_URL=http://localhost:8080
 ## Notes
 
 - No cloud deployment, runs entirely on `docker-compose` locally.
-- pgvector uses an IVFFlat index (`lists=50`) for fast ANN search at this dataset size.
 - Swap `EMBEDDING_PROVIDER` in `.env` to switch between OpenAI and Gemini with no code changes.
